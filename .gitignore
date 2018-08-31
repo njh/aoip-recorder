@@ -10,6 +10,10 @@
 Makefile
 Makefile.in
 
+# NEWS and README are generated from the markdown files
+/README
+/NEWS
+
 /aclocal.m4
 /autom4te.cache
 /build-scripts/*
