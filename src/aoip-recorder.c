@@ -15,6 +15,13 @@
 #include "aoip-recorder.h"
 
 
+const char *default_port = "5004";
+const int default_sample_rate = 48000;
+const int default_sample_size = 24;
+const int default_channel_count = 2;
+const int default_packet_buffer_size = 4;
+const float default_file_duration = 10.0;
+
 ar_config_t config;
 
 static void usage(const char * progname)
