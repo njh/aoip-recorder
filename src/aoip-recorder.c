@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "aoip-recorder.h"
 
@@ -23,6 +24,9 @@ const int default_packet_buffer_size = 4;
 const float default_file_duration = 10.0;
 
 ar_config_t config;
+int still_running = TRUE;
+
+
 
 static void usage(const char * progname)
 {
@@ -112,10 +116,29 @@ static void parse_opts(int argc, char **argv, ar_config_t *config)
 
 }
 
+static void termination_handler(int signum)
+{
+    still_running = FALSE;
+    switch(signum) {
+        case SIGTERM: fprintf(stderr, "Got termination signal.\n"); break;
+        case SIGINT:  fprintf(stderr, "Got interupt signal.\n"); break;
+    }
+    signal(signum, termination_handler);
+}
+
+
+void setup_signal_hander()
+{
+    signal(SIGTERM, termination_handler);
+    signal(SIGINT, termination_handler);
+    signal(SIGHUP, termination_handler);
+}
+
 int main(int argc, char *argv[])
 {
     set_config_defaults(&config);
     parse_opts(argc, argv, &config);
+    setup_signal_hander();
 
     return EXIT_SUCCESS;
 }
