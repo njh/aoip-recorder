@@ -23,7 +23,10 @@ const int default_channel_count = 2;
 const int default_packet_buffer_size = 4;
 const float default_file_duration = 10.0;
 
+
+// Globals
 ar_config_t config;
+ar_socket_t sock;
 int still_running = TRUE;
 
 
@@ -136,9 +139,27 @@ void setup_signal_hander()
 
 int main(int argc, char *argv[])
 {
+    int result;
+
     set_config_defaults(&config);
     parse_opts(argc, argv, &config);
     setup_signal_hander();
+
+    result = ar_socket_open(&sock, &config);
+    if (result) {
+        return EXIT_FAILURE;
+    }
+
+    while(still_running) {
+      char buffer[2048];
+
+      int len = ar_socket_recv(&sock, buffer, sizeof(buffer));
+      printf("Got packet: %d\n", len);
+      if (len < 1) break;
+    
+    }
+
+    ar_socket_close(&sock);
 
     return EXIT_SUCCESS;
 }

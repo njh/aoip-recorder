@@ -12,6 +12,14 @@
 #ifndef AOIP_RECORDER_H
 #define AOIP_RECORDER_H
 
+#include <sys/types.h>
+#include <sys/time.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 
 #ifndef TRUE
 #define TRUE  (1)
@@ -40,5 +48,21 @@ typedef struct
 } ar_config_t;
 
 
+typedef struct
+{
+    int fd;
+    int is_multicast;
+
+    struct addrinfo ainfo;
+    struct sockaddr_storage saddr;
+    struct ipv6_mreq imr6;
+    struct ip_mreq imr;
+
+} ar_socket_t;
+
+
+int ar_socket_open(ar_socket_t* sock, ar_config_t *config);
+int ar_socket_recv(ar_socket_t* sock, void* data, unsigned  int len);
+void ar_socket_close(ar_socket_t* sock);
 
 #endif
