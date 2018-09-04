@@ -1,6 +1,12 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = src
+SUBDIRS = src .
+
+if HAVE_CHECK
+SUBDIRS += tests
+endif
+
+test: check
 
 # Copy README.md to README when building distribution
 dist-hook:

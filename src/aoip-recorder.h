@@ -45,7 +45,7 @@ typedef struct
     const char* port;
     const char* ifname;
 
-    int packet_type;
+    int payload_type;
     int sample_rate;
     int sample_size;
     int channel_count;

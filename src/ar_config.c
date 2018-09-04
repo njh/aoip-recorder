@@ -16,7 +16,6 @@
 #include <errno.h>
 #include <ctype.h>
 
-
 void ar_config_set_defaults(ar_config_t *config)
 {
     memset(config, 0, sizeof(*config));
@@ -25,6 +24,7 @@ void ar_config_set_defaults(ar_config_t *config)
     config->port = DEFAULT_PORT;
     config->ifname = NULL;
 
+    config->payload_type = -1;
     config->sample_rate = DEFAULT_SAMPLE_RATE;
     config->sample_size = DEFAULT_SAMPLE_SIZE;
     config->channel_count = DEFAULT_CHANNEL_COUNT;
@@ -42,7 +42,7 @@ void ar_config_set_sample_format(ar_config_t *config, const char *fmt)
     } else if (strcmp(fmt, "L32") == 0) {
         config->sample_size = 32;
     } else {
-        ar_error("Invalid sample format: %s", fmt);
+        ar_error("Unsupported audio sample format: %s", fmt);
         exit(-1);
     }
 }

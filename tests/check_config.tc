@@ -1,0 +1,36 @@
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "aoip-recorder.h"
+
+#suite aoip_recorder_config
+
+#test test_defaults
+ar_config_t config;
+ar_config_set_defaults(&config);
+ck_assert_ptr_null(config.address);
+ck_assert_str_eq(config.port, "5004");
+ck_assert_ptr_null(config.ifname);
+ck_assert_int_eq(config.payload_type, -1);
+ck_assert_int_eq(config.sample_size, 24);
+ck_assert_int_eq(config.sample_rate, 48000);
+ck_assert_int_eq(config.channel_count, 2);
+
+#test test_set_sample_format_L16
+ar_config_t config;
+ar_config_set_sample_format(&config, "L16");
+ck_assert_int_eq(config.sample_size, 16);
+
+#test test_set_sample_format_L24
+ar_config_t config;
+ar_config_set_sample_format(&config, "L24");
+ck_assert_int_eq(config.sample_size, 24);
+
+#test test_set_sample_format_L32
+ar_config_t config;
+ar_config_set_sample_format(&config, "L32");
+ck_assert_int_eq(config.sample_size, 32);
+
+#test-exit(-1) test_set_sample_format_PCM
+ar_config_t config;
+ar_config_set_sample_format(&config, "PCM");

@@ -30,6 +30,18 @@ AC_CHECK_LIB([mx], [powf])
 PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.18)
 
 
+PKG_CHECK_MODULES(CHECK, check >= 0.9.4, have_check="yes", have_check="no")
+if test x"$have_check" = "xyes"; then
+  AC_CHECK_PROG(have_checkmk, [checkmk], [yes], [no])
+  if test x"$have_checkmk" = "xyes"; then
+    AC_DEFINE([HAVE_CHECK], 1, [Define to 1 if check library is available])
+	else
+    AC_MSG_WARN([Command 'checkmk' not found.])
+    AC_MSG_WARN([Download it here: http://micah.cowan.name/projects/checkmk/])
+  fi
+fi
+AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes" &&
+                           test x"$have_checkmk" = "xyes")
 
 
 dnl ############## Header Checks
@@ -60,6 +72,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([
 	Makefile
 	src/Makefile
+	tests/Makefile
 ])
 
 AC_OUTPUT

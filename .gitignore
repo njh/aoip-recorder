@@ -4,6 +4,9 @@
 *.obj
 *.elf
 
+# Temporary files
+*.log
+
 # Automake generated files
 .deps
 .libs
@@ -26,3 +29,7 @@ Makefile.in
 /src/config.h.in
 /src/aoip-recorder
 /src/stamp-h1
+
+/tests/*.c
+/tests/*.t
+/tests/*.trs
