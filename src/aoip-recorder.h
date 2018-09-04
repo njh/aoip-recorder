@@ -21,6 +21,14 @@
 #include <netdb.h>
 
 
+#define DEFAULT_PORT  "5004"
+#define DEFAULT_SAMPLE_RATE  48000
+#define DEFAULT_SAMPLE_SIZE  24
+#define DEFAULT_CHANNEL_COUNT  2
+#define DEFAULT_PACKET_BUFFER_SIZE  4
+#define DEFAULT_FILE_DURATION  10.0
+
+
 #ifndef TRUE
 #define TRUE  (1)
 #endif
@@ -60,11 +68,12 @@ typedef struct
 
 } ar_socket_t;
 
-
 int ar_socket_open(ar_socket_t* sock, ar_config_t *config);
 int ar_socket_recv(ar_socket_t* sock, void* data, unsigned  int len);
 void ar_socket_close(ar_socket_t* sock);
 
+void ar_config_set_defaults(ar_config_t *config);
+void ar_config_set_sample_format(ar_config_t *config, const char *fmt);
 
 // ------- Logging ---------
 
