@@ -65,4 +65,39 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config);
 int ar_socket_recv(ar_socket_t* sock, void* data, unsigned  int len);
 void ar_socket_close(ar_socket_t* sock);
 
+
+// ------- Logging ---------
+
+void setup_signal_hander();
+extern int running;
+extern int exit_code;
+extern int verbose;
+extern int quiet;
+
+typedef enum {
+  AR_LOG_DEBUG,
+  AR_LOG_INFO,
+  AR_LOG_WARN,
+  AR_LOG_ERROR
+} ar_log_level;
+
+
+void ar_log(ar_log_level level, const char *fmt, ...);
+
+// Only display debug if verbose
+#define ar_debug( ... ) \
+		ar_log(AR_LOG_DEBUG, __VA_ARGS__ )
+
+// Don't show info when quiet
+#define ar_info( ... ) \
+		ar_log(AR_LOG_INFO, __VA_ARGS__ )
+
+#define ar_warn( ... ) \
+		ar_log(AR_LOG_WARN, __VA_ARGS__ )
+
+// All errors are fatal
+#define ar_error( ... ) \
+		ar_log(AR_LOG_ERROR, __VA_ARGS__ )
+
+
 #endif

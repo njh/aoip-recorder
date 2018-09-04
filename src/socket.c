@@ -1,5 +1,5 @@
 /*
-  sock.c
+  socket.c
 
   AoIP Recorder
   Copyright (C) 2018  Nicholas Humfrey
@@ -55,7 +55,7 @@ static int _get_addrinfo( const char *host, const char *port, struct addrinfo *a
 
     error = getaddrinfo(host, port, &hints, &res);
     if (error || res == NULL) {
-        fprintf(stderr, "getaddrinfo failed: %s\n", gai_strerror(error));
+        ar_warn("getaddrinfo failed: %s", gai_strerror(error));
         return error;
     }
 
@@ -87,7 +87,7 @@ static int _get_addrinfo( const char *host, const char *port, struct addrinfo *a
 
     // Unsuccessful ?
     if (retval == -1) {
-        fprintf(stderr, "Failed to find an address for getaddrinfo() to bind to.\n");
+        ar_error("Failed to find an address for getaddrinfo() to bind to.");
     }
 
     return retval;
@@ -222,6 +222,8 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
     sock->fd = 0;
     sock->is_multicast = 0;	// not joined yet
 
+    ar_info("Opening socket: %s/%s", config->address, config->port);
+
     /* Lookup address, get info */
     if (_get_addrinfo( config->address, config->port, &sock->ainfo, &sock->saddr )) {
         ar_socket_close(sock);
@@ -248,7 +250,7 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
         }
 
         if (_join_group(sock) < 0) {
-            fprintf(stderr, "Failed to join multicast group.\n");
+            ar_error("Failed to join multicast group.");
             sock->is_multicast = 0;
             ar_socket_close(sock);
             return -1;
@@ -257,11 +259,10 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
     } else if (sock->is_multicast == 0) {
 
         // FIXME: add support for non-multicast
-        fprintf(stderr, "Not a multicast address\n");
-        exit(EXIT_FAILURE);
+        ar_error("Not a multicast address");
 
     } else {
-        fprintf(stderr, "Error checking if address is multicast.\n");
+        ar_error("Error checking if address is multicast");
     }
     
     return 0;
@@ -289,7 +290,7 @@ int ar_socket_recv( ar_socket_t* sock, void* data, unsigned  int len)
         return -1;
 
     } else if (retval==0) {
-        fprintf(stderr, "Timed out waiting for packet after %ld seconds.\n", timeout.tv_sec);
+        ar_warn("Timed out waiting for packet after %ld seconds", timeout.tv_sec);
         return 0;
     }
 

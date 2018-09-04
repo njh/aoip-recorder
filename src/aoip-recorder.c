@@ -27,8 +27,6 @@ const float default_file_duration = 10.0;
 // Globals
 ar_config_t config;
 ar_socket_t sock;
-int still_running = TRUE;
-
 
 
 static void usage(const char * progname)
@@ -43,6 +41,8 @@ static void usage(const char * progname)
     fprintf(stderr, "   -c <channels>  Channel Count (default %d)\n", default_channel_count);
     fprintf(stderr, "   -b <size>      Packet Buffer Size (default %d)\n", default_packet_buffer_size);
     fprintf(stderr, "   -d <duration>  File Duration (default %2.2f)\n", default_file_duration);
+    fprintf(stderr, "   -v             Verbose Logging\n");
+    fprintf(stderr, "   -q             Quiet Logging\n");
 
     exit(EXIT_FAILURE);
 }
@@ -56,8 +56,8 @@ static int parse_sample_format(const char *fmt)
     } else if (strcmp(fmt, "L32") == 0) {
         return 32;
     } else {
-        fprintf(stderr, "Invalid sample format: %s\n", fmt);
-        exit(EXIT_FAILURE);
+        ar_error("Invalid sample format: %s", fmt);
+        exit(-1);
     }
 }
 
@@ -80,11 +80,11 @@ static void set_config_defaults(ar_config_t *config)
 
 static void parse_opts(int argc, char **argv, ar_config_t *config)
 {
+    const char* progname = argv[0];
     int ch;
 
-
     // Parse the options/switches
-    while ((ch = getopt(argc, argv, "a:p:i:r:f:c:b:d:?h")) != -1) {
+    while ((ch = getopt(argc, argv, "a:p:i:r:f:c:b:d:vq?h")) != -1) {
         switch (ch) {
         case 'a':
             config->address = optarg;
@@ -110,31 +110,36 @@ static void parse_opts(int argc, char **argv, ar_config_t *config)
         case 'd':
             config->file_duration = atoi(optarg);
             break;
+        case 'v':
+            verbose = TRUE;
+            break;
+        case 'q':
+            quiet = TRUE;
+            break;
         case '?':
         case 'h':
         default:
-            usage(argv[0]);
+            usage(progname);
         }
     }
 
-}
-
-static void termination_handler(int signum)
-{
-    still_running = FALSE;
-    switch(signum) {
-        case SIGTERM: fprintf(stderr, "Got termination signal.\n"); break;
-        case SIGINT:  fprintf(stderr, "Got interupt signal.\n"); break;
+    // Check remaining arguments
+    argc -= optind;
+    argv += optind;
+    if (argc > 1) {
+        usage(progname);
     }
-    signal(signum, termination_handler);
-}
+    
+    // Validate parameters
+    if (quiet && verbose) {
+        ar_error("Can't be quiet and verbose at the same time.");
+        usage(progname);
+    }
 
-
-void setup_signal_hander()
-{
-    signal(SIGTERM, termination_handler);
-    signal(SIGINT, termination_handler);
-    signal(SIGHUP, termination_handler);
+    if (config->address == NULL || strlen(config->address) < 1) {
+        ar_error("No address specified");
+        usage(progname);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -150,16 +155,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    while(still_running) {
+    while(running) {
       char buffer[2048];
 
       int len = ar_socket_recv(&sock, buffer, sizeof(buffer));
-      printf("Got packet: %d\n", len);
+      ar_info("Got packet: %d", len);
       if (len < 1) break;
-    
     }
 
     ar_socket_close(&sock);
 
-    return EXIT_SUCCESS;
+    return exit_code;
 }
