@@ -232,8 +232,8 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
 
     // Create socket for recieving
     if ((sock->fd = socket(sock->ainfo.ai_family,
-                             sock->ainfo.ai_socktype,
-                             sock->ainfo.ai_protocol )) <0) {
+                           sock->ainfo.ai_socktype,
+                           sock->ainfo.ai_protocol )) <0) {
         perror("recieving socket() failed");
         ar_socket_close(sock);
         return -1;
@@ -264,7 +264,7 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
     } else {
         ar_error("Error checking if address is multicast");
     }
-    
+
     return 0;
 }
 
@@ -284,7 +284,7 @@ int ar_socket_recv( ar_socket_t* sock, void* data, unsigned  int len)
     FD_SET(sock->fd, &readfds);
     retval = select(FD_SETSIZE, &readfds, NULL, NULL, &timeout);
 
-    // Check return value 
+    // Check return value
     if (retval == -1) {
         perror("select()");
         return -1;
@@ -298,7 +298,7 @@ int ar_socket_recv( ar_socket_t* sock, void* data, unsigned  int len)
     /* Packet is waiting - read it in */
     packet_len = recv(sock->fd, data, len, 0);
 
-    return packet_len;	 
+    return packet_len;
 }
 
 
@@ -315,7 +315,7 @@ void ar_socket_close(ar_socket_t* sock )
 
     /* Close the sockets */
     if (sock->fd >= 0) {
-      close(sock->fd);
-      sock->fd = -1;
+        close(sock->fd);
+        sock->fd = -1;
     }
 }
