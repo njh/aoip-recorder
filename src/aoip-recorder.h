@@ -74,6 +74,8 @@ void ar_socket_close(ar_socket_t* sock);
 
 void ar_config_set_defaults(ar_config_t *config);
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt);
+void ar_config_parse_sdp(ar_config_t *config, const char* filename);
+
 
 // ------- Logging ---------
 

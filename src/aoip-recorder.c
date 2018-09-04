@@ -87,7 +87,9 @@ static void parse_opts(int argc, char **argv, ar_config_t *config)
     // Check remaining arguments
     argc -= optind;
     argv += optind;
-    if (argc > 1) {
+    if (argc == 1) {
+        ar_config_parse_sdp(config, argv[0]);
+    } else if (argc > 1) {
         usage(progname);
     }
 

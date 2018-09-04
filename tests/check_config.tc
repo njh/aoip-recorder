@@ -35,3 +35,28 @@ ck_assert_int_eq(config.sample_size, 32);
 // #test-exit(-1) test_set_sample_format_PCM
 // ar_config_t config;
 // ar_config_set_sample_format(&config, "PCM");
+
+#test test_sdp_aoip44
+ar_config_t config;
+ar_config_set_defaults(&config);
+
+ar_config_parse_sdp(&config, FIXTURE_DIR "aoip44.sdp");
+ck_assert_str_eq(config.address, "239.65.125.63");
+ck_assert_str_eq(config.port, "5004");
+ck_assert_int_eq(config.payload_type, 97);
+ck_assert_int_eq(config.sample_size, 24);
+ck_assert_int_eq(config.sample_rate, 48000);
+ck_assert_int_eq(config.channel_count, 2);
+
+
+#test test_sdp_mono
+ar_config_t config;
+ar_config_set_defaults(&config);
+
+ar_config_parse_sdp(&config, FIXTURE_DIR "mono.sdp");
+ck_assert_str_eq(config.address, "224.123.234.56");
+ck_assert_str_eq(config.port, "1234");
+ck_assert_int_eq(config.payload_type, 11);
+ck_assert_int_eq(config.sample_size, 16);
+ck_assert_int_eq(config.sample_rate, 44100);
+ck_assert_int_eq(config.channel_count, 1);
