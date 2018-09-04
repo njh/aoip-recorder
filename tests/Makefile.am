@@ -11,3 +11,5 @@ check_config_t_SOURCES = \
   check_config.tc \
   $(top_srcdir)/src/ar_config.c \
   $(top_srcdir)/src/utils.c
+
+CLEANFILES = *.c
