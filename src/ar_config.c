@@ -34,7 +34,6 @@ void ar_config_set_defaults(ar_config_t *config)
 
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt)
 {
-    ar_debug("Setting sample format to: %s", fmt);
     if (strcmp(fmt, "L16") == 0) {
         config->sample_size = 16;
     } else if (strcmp(fmt, "L24") == 0) {
@@ -94,7 +93,7 @@ static void sdp_media_parse(ar_config_t *config, char* line)
         ar_error("SDP media format is not valid: %s", fmt);
     } else {
         config->payload_type = atoi(fmt);
-        ar_debug("  SDP Payload Type: %d", config->payload_type);
+        ar_debug("SDP Payload Type: %d", config->payload_type);
     }
 }
 
@@ -104,14 +103,20 @@ static void sdp_attribute_parse(ar_config_t *config, char* line)
 
     if (strcmp(attr, "rtpmap") == 0) {
         char *pt = strsep(&line, " ");
-        
+
         if (pt != NULL && atoi(pt) == config->payload_type) {
-          char *format = strsep(&line, "/");
-          char *sample_rate = strsep(&line, "/");
-          char *channel_count = strsep(&line, "/");
-          ar_config_set_sample_format(config, format);
-          config->sample_rate = atoi(sample_rate);
-          config->channel_count = atoi(channel_count);
+            char *format = strsep(&line, "/");
+            char *sample_rate = strsep(&line, "/");
+            char *channel_count = strsep(&line, "/");
+            ar_config_set_sample_format(config, format);
+            config->sample_rate = atoi(sample_rate);
+            config->channel_count = atoi(channel_count);
+            ar_debug(
+                "SDP Audio Format: L%d/%d/%d",
+                config->sample_size,
+                config->sample_rate,
+                config->channel_count
+            );
         }
     }
 }
@@ -164,6 +169,10 @@ void ar_config_parse_sdp(ar_config_t *config, const char* filename)
                 if (strcmp(&line[2], "0") != 0) {
                     ar_warn("SDP version number is not 0: %s", &line[2]);
                 }
+                break;
+
+            case 's':
+                ar_info("SDP Subject: %s", &line[2]);
                 break;
 
             case 'c':
