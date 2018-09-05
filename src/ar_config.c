@@ -133,12 +133,15 @@ void ar_config_parse_sdp(ar_config_t *config, const char* filename)
 
     while(!feof(file)) {
         char line[1024];
-        char *res = fgets(line, sizeof(line), file);
-        if (res == NULL)
+        char *result;
+        int i;
+
+        result = fgets(line, sizeof(line), file);
+        if (result == NULL)
             break;
 
         // Remove whitespace from the end of the line
-        for(int i=strlen(line); i > 0; i--) {
+        for(i=strlen(line); i > 0; i--) {
             if (isspace(line[i]) || line[i] == '\0') {
                 line[i] = '\0';
             } else {
