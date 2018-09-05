@@ -17,6 +17,7 @@ check_config_t_SOURCES = \
 
 EXTRA_DIST = \
   fixtures/aoip44.sdp \
-  fixtures/mono.sdp
+  fixtures/mono.sdp \
+  fixtures/xnode.sdp
 
 CLEANFILES = *.c
