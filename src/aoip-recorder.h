@@ -61,7 +61,6 @@ typedef struct
     int fd;
     int is_multicast;
 
-    struct addrinfo ainfo;
     struct sockaddr_storage saddr;
     struct ipv6_mreq imr6;
     struct ip_mreq imr;
