@@ -1,0 +1,34 @@
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "aoip-recorder.h"
+
+#suite aoip_recorder_rtp
+
+#test test_parse
+const uint8_t data[] = {
+  0x80, 0x61, 0xee, 0x14, 0xa2, 0x32, 0x12, 0x4c,
+  0xe9, 0xf8, 0xd8, 0x33, 0xf8, 0x88, 0x63, 0xf8,
+  0x58, 0xef, 0xf5, 0x7b, 0x2c, 0xf5, 0x34, 0xe7
+};
+ar_rtp_packet_t packet;
+memcpy(packet.buffer, data, sizeof(data));
+packet.length = sizeof(data);
+
+ar_rtp_parse(&packet);
+ck_assert_int_eq(packet.version, 2);
+ck_assert_int_eq(packet.padding, 0);
+ck_assert_int_eq(packet.extension, 0);
+ck_assert_int_eq(packet.csrc_count, 0);
+ck_assert_int_eq(packet.marker, 0);
+ck_assert_int_eq(packet.payload_type, 97);
+
+ck_assert_int_eq(packet.sequence, 60948);
+ck_assert_int_eq(packet.timestamp, 2721190476);
+ck_assert_int_eq(packet.ssrc, 0xe9f8d833);
+
+ck_assert_int_eq(packet.payload_length, 12);
+ck_assert_int_eq(packet.payload[0], 0xf8);
+ck_assert_int_eq(packet.payload[1], 0x88);
+ck_assert_int_eq(packet.payload[2], 0x63);
+ck_assert_int_eq(packet.payload[3], 0xf8);

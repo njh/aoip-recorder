@@ -67,6 +67,28 @@ typedef struct
 
 } ar_socket_t;
 
+typedef struct
+{
+    uint8_t version;
+    uint8_t padding;
+    uint8_t extension;
+    uint8_t csrc_count;
+    uint8_t marker;
+    uint8_t payload_type;
+
+    uint16_t sequence;
+    uint32_t timestamp;
+    uint32_t ssrc;
+
+    uint16_t payload_length;
+    uint8_t *payload;
+
+    uint16_t length;
+    uint8_t buffer[1500];
+
+} ar_rtp_packet_t;
+
+
 int ar_socket_open(ar_socket_t* sock, ar_config_t *config);
 int ar_socket_recv(ar_socket_t* sock, void* data, unsigned  int len);
 void ar_socket_close(ar_socket_t* sock);
@@ -74,6 +96,9 @@ void ar_socket_close(ar_socket_t* sock);
 void ar_config_set_defaults(ar_config_t *config);
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt);
 void ar_config_parse_sdp(ar_config_t *config, const char* filename);
+
+int ar_rtp_parse( ar_rtp_packet_t* packet );
+int ar_rtp_recv( ar_socket_t* socket, ar_rtp_packet_t* packet );
 
 
 // ------- Logging ---------
