@@ -97,6 +97,7 @@ void ar_socket_close(ar_socket_t* sock);
 
 void ar_config_set_defaults(ar_config_t *config);
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt);
+void ar_config_set_payload_type(ar_config_t *config, int payload_type);
 void ar_config_parse_sdp(ar_config_t *config, const char* filename);
 
 int ar_rtp_parse( ar_rtp_packet_t* packet );

@@ -46,6 +46,22 @@ void ar_config_set_sample_format(ar_config_t *config, const char *fmt)
     }
 }
 
+void ar_config_set_payload_type(ar_config_t *config, int payload_type)
+{
+    config->payload_type = payload_type;
+
+    if (payload_type == 10) {
+        config->sample_size = 16;
+        config->sample_rate = 44100;
+        config->channel_count = 2;
+    } else if (payload_type == 11) {
+        config->sample_size = 16;
+        config->sample_rate = 44100;
+        config->channel_count = 1;
+    } else if (payload_type < 96) {
+        ar_error("Unsupported static payload type: %d", payload_type);
+    }
+}
 
 static void sdp_connection_parse(ar_config_t *config, char* line)
 {

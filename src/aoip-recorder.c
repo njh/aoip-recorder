@@ -130,6 +130,13 @@ int main(int argc, char *argv[])
         int result = ar_rtp_recv(&sock, &packet);
         if (result < 0) break;
 
+        // Is the Payload Type what we were expecting?
+        if (config.payload_type == -1) {
+            ar_config_set_payload_type(&config, packet.payload_type);
+        } else if (config.payload_type != packet.payload_type) {
+            ar_warn("Received unexpected Payload Type: %d", packet.payload_type);
+        }
+
         ar_debug("RTP packet ts=%lu seq=%u", packet.timestamp, packet.sequence);
 
         ar_writer_write(file, packet.payload, packet.payload_length);
