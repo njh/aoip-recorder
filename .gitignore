@@ -30,6 +30,7 @@ Makefile.in
 /src/aoip-recorder
 /src/stamp-h1
 
-/tests/*.c
-/tests/*.t
-/tests/*.trs
+# Generated Test files
+/test/*.c
+/test/*.t
+/test/*.trs

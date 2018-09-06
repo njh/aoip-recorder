@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src .
 
 if HAVE_CHECK
-SUBDIRS += tests
+SUBDIRS += test
 endif
 
 test: check
