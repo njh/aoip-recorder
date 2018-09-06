@@ -12,7 +12,6 @@ addons:
     - automake
     - autoconf
     - libtool
-    - check
     - libsndfile1-dev
 
 script:
