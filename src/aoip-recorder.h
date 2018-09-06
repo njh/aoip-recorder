@@ -20,6 +20,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#include <sndfile.h>
+
 
 #define DEFAULT_PORT  "5004"
 #define DEFAULT_SAMPLE_RATE  48000
@@ -99,6 +101,9 @@ void ar_config_parse_sdp(ar_config_t *config, const char* filename);
 
 int ar_rtp_parse( ar_rtp_packet_t* packet );
 int ar_rtp_recv( ar_socket_t* socket, ar_rtp_packet_t* packet );
+
+SNDFILE *ar_writer_open( ar_config_t *config, const char* path);
+void ar_writer_write(SNDFILE *file, uint8_t* payload, int payload_length);
 
 
 // ------- Logging ---------

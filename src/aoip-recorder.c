@@ -107,6 +107,7 @@ static void parse_opts(int argc, char **argv, ar_config_t *config)
 
 int main(int argc, char *argv[])
 {
+    SNDFILE * file;
     int result;
 
     ar_config_set_defaults(&config);
@@ -118,12 +119,24 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    while(running) {
-      char buffer[2048];
+    file = ar_writer_open(&config, "recording.wav");
+    if (file == NULL) {
+        ar_error("Failed to open output file");
+    }
 
-      int len = ar_socket_recv(&sock, buffer, sizeof(buffer));
-      ar_info("Got packet: %d", len);
-      if (len < 1) break;
+    while(running) {
+        ar_rtp_packet_t packet;
+
+        int result = ar_rtp_recv(&sock, &packet);
+        if (result < 0) break;
+
+        ar_debug("RTP packet ts=%lu seq=%u", packet.timestamp, packet.sequence);
+
+        ar_writer_write(file, packet.payload, packet.payload_length);
+    }
+
+    if (file) {
+        sf_close(file);
     }
 
     ar_socket_close(&sock);

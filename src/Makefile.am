@@ -6,4 +6,5 @@ aoip_recorder_SOURCES = \
 	ar_config.c \
 	rtp.c \
 	socket.c \
-	utils.c
+	utils.c \
+	writer.c
