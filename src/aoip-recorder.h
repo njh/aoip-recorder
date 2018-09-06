@@ -115,10 +115,10 @@ extern int verbose;
 extern int quiet;
 
 typedef enum {
-  AR_LOG_DEBUG,
-  AR_LOG_INFO,
-  AR_LOG_WARN,
-  AR_LOG_ERROR
+    AR_LOG_DEBUG,
+    AR_LOG_INFO,
+    AR_LOG_WARN,
+    AR_LOG_ERROR
 } ar_log_level;
 
 
