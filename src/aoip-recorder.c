@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
 
         // Is the Payload Type what we were expecting?
         if (config.payload_type == -1) {
+            ar_info("Payload type of first packet: %d", packet.payload_type);
             ar_config_set_payload_type(&config, packet.payload_type);
         } else if (config.payload_type != packet.payload_type) {
             ar_warn("Received unexpected Payload Type: %d", packet.payload_type);

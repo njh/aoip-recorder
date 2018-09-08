@@ -108,7 +108,7 @@ static void sdp_media_parse(ar_config_t *config, char* line)
     if (fmt == NULL || strlen(fmt) > 2) {
         ar_error("SDP media format is not valid: %s", fmt);
     } else {
-        config->payload_type = atoi(fmt);
+        ar_config_set_payload_type(config, atoi(fmt));
         ar_debug("SDP Payload Type: %d", config->payload_type);
     }
 }
