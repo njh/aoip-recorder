@@ -43,9 +43,9 @@
 
 typedef struct
 {
-    const char* address;
-    const char* port;
-    const char* ifname;
+    char* address;
+    char* port;
+    char* ifname;
 
     int payload_type;
     int sample_rate;
@@ -96,9 +96,13 @@ int ar_socket_recv(ar_socket_t* sock, void* data, unsigned  int len);
 void ar_socket_close(ar_socket_t* sock);
 
 void ar_config_set_defaults(ar_config_t *config);
+void ar_config_set_address(ar_config_t *config, const char *address);
+void ar_config_set_port(ar_config_t *config, const char *port);
+void ar_config_set_ifname(ar_config_t *config, const char *ifname);
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt);
 void ar_config_set_payload_type(ar_config_t *config, int payload_type);
 void ar_config_parse_sdp(ar_config_t *config, const char* filename);
+void ar_config_free(ar_config_t *config);
 
 int ar_rtp_parse( ar_rtp_packet_t* packet );
 int ar_rtp_recv( ar_socket_t* socket, ar_rtp_packet_t* packet );

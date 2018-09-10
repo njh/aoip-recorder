@@ -16,6 +16,33 @@ ck_assert_int_eq(config.sample_size, 24);
 ck_assert_int_eq(config.sample_rate, 48000);
 ck_assert_int_eq(config.channel_count, 2);
 
+#test test_set_address
+ar_config_t config;
+ar_config_set_defaults(&config);
+ar_config_set_address(&config, "127.0.0.1");
+ck_assert_str_eq(config.address, "127.0.0.1");
+ar_config_set_address(&config, NULL);
+ck_assert(config.address == NULL);
+ar_config_free(&config);
+
+#test test_set_port
+ar_config_t config;
+ar_config_set_defaults(&config);
+ar_config_set_port(&config, "5004");
+ck_assert_str_eq(config.port, "5004");
+ar_config_set_port(&config, NULL);
+ck_assert(config.port == NULL);
+ar_config_free(&config);
+
+#test test_set_ifname
+ar_config_t config;
+ar_config_set_defaults(&config);
+ar_config_set_ifname(&config, "eth0");
+ck_assert_str_eq(config.ifname, "eth0");
+ar_config_set_ifname(&config, NULL);
+ck_assert(config.ifname == NULL);
+ar_config_free(&config);
+
 #test test_set_sample_format_L16
 ar_config_t config;
 ar_config_set_sample_format(&config, "L16");

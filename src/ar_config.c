@@ -20,9 +20,9 @@ void ar_config_set_defaults(ar_config_t *config)
 {
     memset(config, 0, sizeof(*config));
 
-    config->address = NULL;
-    config->port = DEFAULT_PORT;
-    config->ifname = NULL;
+    ar_config_set_address(config, NULL);
+    ar_config_set_port(config, DEFAULT_PORT);
+    ar_config_set_ifname(config, NULL);
 
     config->payload_type = -1;
     config->sample_rate = DEFAULT_SAMPLE_RATE;
@@ -30,6 +30,45 @@ void ar_config_set_defaults(ar_config_t *config)
     config->channel_count = DEFAULT_CHANNEL_COUNT;
     config->packet_buffer_size = DEFAULT_PACKET_BUFFER_SIZE;
     config->file_duration = DEFAULT_FILE_DURATION;
+}
+
+void ar_config_set_address(ar_config_t *config, const char *address)
+{
+    if (config->address) {
+        free(config->address);
+    }
+
+    if (address && strlen(address) > 1) {
+        config->address = strdup(address);
+    } else {
+        config->address = NULL;
+    }
+}
+
+void ar_config_set_port(ar_config_t *config, const char *port)
+{
+    if (config->port) {
+        free(config->port);
+    }
+
+    if (port && strlen(port) > 1) {
+        config->port = strdup(port);
+    } else {
+        config->port = NULL;
+    }
+}
+
+void ar_config_set_ifname(ar_config_t *config, const char *ifname)
+{
+    if (config->ifname) {
+        free(config->ifname);
+    }
+
+    if (ifname && strlen(ifname) > 1) {
+        config->ifname = strdup(ifname);
+    } else {
+        config->ifname = NULL;
+    }
 }
 
 void ar_config_set_sample_format(ar_config_t *config, const char *fmt)
@@ -78,7 +117,7 @@ static void sdp_connection_parse(ar_config_t *config, char* line)
     }
 
     if (addr == NULL || strlen(addr) > 7) {
-        config->address = strdup(addr);
+        ar_config_set_address(config, addr);
     } else {
         ar_error("Invalid connection address: %s", addr);
     }
@@ -96,7 +135,7 @@ static void sdp_media_parse(ar_config_t *config, char* line)
     }
 
     if (port == NULL || strlen(port) > 2) {
-        config->port = strdup(port);
+        ar_config_set_port(config, port);
     } else {
         ar_error("Invalid connection port: %s", port);
     }
@@ -206,4 +245,22 @@ void ar_config_parse_sdp(ar_config_t *config, const char* filename)
     }
 
     fclose(file);
+}
+
+void ar_config_free(ar_config_t *config)
+{
+    if (config->address) {
+        free(config->address);
+        config->address = NULL;
+    }
+
+    if (config->port) {
+        free(config->port);
+        config->port = NULL;
+    }
+
+    if (config->ifname) {
+        free(config->ifname);
+        config->ifname = NULL;
+    }
 }

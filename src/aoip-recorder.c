@@ -48,13 +48,13 @@ static void parse_opts(int argc, char **argv, ar_config_t *config)
     while ((ch = getopt(argc, argv, "a:p:i:r:f:c:b:d:vq?h")) != -1) {
         switch (ch) {
         case 'a':
-            config->address = optarg;
+            ar_config_set_address(config, optarg);
             break;
         case 'p':
-            config->port = optarg;
+            ar_config_set_port(config, optarg);
             break;
         case 'i':
-            config->ifname = optarg;
+            ar_config_set_ifname(config, optarg);
             break;
         case 'r':
             config->sample_rate = atoi(optarg);
@@ -148,6 +148,7 @@ int main(int argc, char *argv[])
     }
 
     ar_socket_close(&sock);
+    ar_config_free(&config);
 
     return exit_code;
 }
