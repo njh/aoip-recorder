@@ -15,9 +15,6 @@
 
 #define bitMask(byte, mask, shift) ((byte & (mask << shift)) >> shift)
 
-
-#define RTP_HEADER_LENGTH   (12)
-
 int ar_rtp_parse( ar_rtp_packet_t* packet )
 {
     int header_len = RTP_HEADER_LENGTH;

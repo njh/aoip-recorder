@@ -30,6 +30,9 @@
 #define DEFAULT_PACKET_BUFFER_SIZE  4
 #define DEFAULT_FILE_DURATION  10.0
 
+#define RTP_MAX_PAYLOAD     (1440)
+#define RTP_HEADER_LENGTH   (12)
+
 
 #ifndef TRUE
 #define TRUE  (1)

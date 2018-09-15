@@ -43,28 +43,33 @@ SNDFILE * ar_writer_open( ar_config_t *config, const char* path)
         ar_error( "Output format is not valid." );
         return NULL;
     }
-    
+
     return sf_open(path, SFM_WRITE, &sfinfo);
 }
 
 void ar_writer_write(SNDFILE *file, uint8_t* payload, int payload_length)
 {
-    int i;
-    
-    if (payload_length % 6 != 0) {
-        ar_warn("payload size is not a multiple of 6");
+    int s32[RTP_MAX_PAYLOAD / 3];
+    sf_count_t written = 0;
+    sf_count_t count = 0;
+    int byte;
+
+    if (payload_length > RTP_MAX_PAYLOAD) {
+        ar_error("payload length is greater than maximum RTP payload size");
+        return;
     }
 
-    for(i=0; i< payload_length; i+=6) {
-        sf_count_t written;
-        int s32[2];
+    if (payload_length % 3 != 0) {
+        ar_warn("payload length is not a multiple of 3");
+    }
 
-        s32[0] = bytesToInt24(&payload[i]);
-        s32[1] = bytesToInt24(&payload[i+3]);
-    
-        written = sf_write_int(file, s32, 2);
-        if (written != 2) {
-            ar_error("Failed to write audio to disk: %s", sf_strerror(file));
-        }
+    // Convert payload to an array of 32-bit integers
+    for(byte=0; byte < payload_length; byte += 3) {
+        s32[count++] = bytesToInt24(&payload[byte]);
+    }
+
+    written = sf_write_int(file, s32, count);
+    if (written != count) {
+        ar_error("Failed to write audio to disk: %s", sf_strerror(file));
     }
 }
