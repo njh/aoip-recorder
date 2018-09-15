@@ -9,15 +9,12 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "bytestoint.h"
 #include "aoip-recorder.h"
 
 
 #define bitMask(byte, mask, shift) ((byte & (mask << shift)) >> shift)
 
-#define bytesToInt16(a) (((uint16_t)(a)[0] << 8) | (a)[1])
-#define bytesToInt32(a) (((uint32_t)(a)[0] << 24) | \
-                         ((uint32_t)(a)[1] << 16) | \
-                         ((uint32_t)(a)[2] << 8) | (a)[3])
 
 #define RTP_HEADER_LENGTH   (12)
 

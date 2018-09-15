@@ -10,6 +10,7 @@
 #include <sndfile.h>
 
 #include "aoip-recorder.h"
+#include "bytestoint.h"
 
 
 
@@ -45,10 +46,6 @@ SNDFILE * ar_writer_open( ar_config_t *config, const char* path)
     
     return sf_open(path, SFM_WRITE, &sfinfo);
 }
-
-#define bytesToInt24(a) (((int)(a)[0] << 24) | \
-                         ((int)(a)[1] << 16) | \
-                         ((int)(a)[2] << 8))
 
 void ar_writer_write(SNDFILE *file, uint8_t* payload, int payload_length)
 {
