@@ -67,8 +67,11 @@ typedef struct
     int is_multicast;
 
     struct sockaddr_storage saddr;
-    struct ipv6_mreq imr6;
-    struct ip_mreq imr;
+
+    union {
+      struct ipv6_mreq imr6;
+      struct ip_mreq imr;
+    };
 
 } ar_socket_t;
 

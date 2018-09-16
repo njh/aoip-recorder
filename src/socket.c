@@ -29,7 +29,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
+#include <ifaddrs.h>
+#include <net/if.h>
+#include <errno.h>
 
 
 // Added to ensure compilation with KAME
@@ -120,21 +122,76 @@ static int _is_multicast(struct sockaddr_storage *addr)
     }
 }
 
-static int _join_group( ar_socket_t *sock )
+static int _get_interface_ipv4_addr(const char* ifname, struct in_addr *addr)
 {
+    struct ifaddrs *addrs, *cur;
     int retval = -1;
+    int foundAddress = FALSE;
+
+    if (ifname == NULL || strlen(ifname) < 1) {
+        addr->s_addr = INADDR_ANY;
+        return 0;
+    }
+
+    // Get a linked list of all the interfaces
+    retval = getifaddrs(&addrs);
+    if (retval < 0) {
+        return retval;
+    }
+
+    // Iterate through each of the interfaces
+    for(cur = addrs; cur; cur = cur->ifa_next)
+    {
+        if (cur->ifa_addr && cur->ifa_addr->sa_family == AF_INET) {
+            if (strcmp(cur->ifa_name, ifname) == 0) {
+                struct sockaddr_in *sockaddr = (struct sockaddr_in *)cur->ifa_addr;
+                addr->s_addr = sockaddr->sin_addr.s_addr;
+                foundAddress = TRUE;
+                break;
+            }
+        }
+    }
+
+    freeifaddrs(addrs);
+    
+    return foundAddress ? 0 : -1;
+}
+
+
+static int _join_group( ar_socket_t *sock, const char* ifname)
+{
+    unsigned int if_index = 0;
+    int retval = -1;
+    
+    // If a network interface name was given, check it exists
+    if (ifname != NULL && strlen(ifname) > 0) {
+        if_index = if_nametoindex(ifname);
+        if (if_index == 0) {
+            if (errno == ENXIO) {
+                ar_error("Network interface not found: %s", ifname);
+                return -1;
+            } else {
+                ar_error("Error looking up interface: %s", strerror(errno));
+            }
+        }
+    }
 
     switch (sock->saddr.ss_family) {
     case AF_INET:
 
         sock->imr.imr_multiaddr.s_addr=
             ((struct sockaddr_in*)&sock->saddr)->sin_addr.s_addr;
-        sock->imr.imr_interface.s_addr= INADDR_ANY;
 
-        retval= setsockopt(sock->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                           &sock->imr, sizeof(sock->imr));
-        if (retval<0)
-            perror("_join_group failed on IP_ADD_MEMBERSHIP");
+        retval = _get_interface_ipv4_addr( ifname, &sock->imr.imr_interface);
+        if (retval) {
+            ar_error("Failed to get IPv4 address of network interface");
+        } else {
+            retval = setsockopt(sock->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                               &sock->imr, sizeof(sock->imr));
+            if (retval < 0) {
+                ar_warn("IP_ADD_MEMBERSHIP failed: %s", strerror(errno));
+            }
+        }
         break;
 
     case AF_INET6:
@@ -143,14 +200,14 @@ static int _join_group( ar_socket_t *sock )
                &(((struct sockaddr_in6*)&sock->saddr)->sin6_addr),
                sizeof(struct in6_addr));
 
-        // FIXME: should be a method for chosing interface to use
-        sock->imr6.ipv6mr_interface=0;
+        sock->imr6.ipv6mr_interface = if_index;
 
-        retval= setsockopt(sock->fd, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
+        retval = setsockopt(sock->fd, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP,
                            &sock->imr6, sizeof(sock->imr6));
-        if (retval<0)
-            perror("_join_group failed on IPV6_ADD_MEMBERSHIP");
 
+        if (retval < 0) {
+            ar_warn("IPV6_ADD_MEMBERSHIP failed: %s", strerror(errno));
+        }
         break;
     }
 
@@ -159,7 +216,7 @@ static int _join_group( ar_socket_t *sock )
 
 
 static int _leave_group( ar_socket_t* sock )
-{ 
+{
     int retval = -1;
 
     switch (sock->saddr.ss_family) {
@@ -204,8 +261,7 @@ int ar_socket_open(ar_socket_t* sock, ar_config_t *config)
     if (sock->is_multicast == 1) {
 
         ar_debug("Joining multicast group");
-        if (_join_group(sock)) {
-            ar_error("Failed to join multicast group.");
+        if (_join_group(sock, config->ifname)) {
             sock->is_multicast = 0;
             ar_socket_close(sock);
             return -1;
