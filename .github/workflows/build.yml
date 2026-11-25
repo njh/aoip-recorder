@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            pkg-config \
+            automake \
+            autoconf \
+            libtool \
+            libsndfile1-dev \
+            check
+
+      - name: Generate build system and configure
+        run: ./autogen.sh
+
+      - name: Build
+        run: make
+
+      - name: Distribution check
+        run: make distcheck
