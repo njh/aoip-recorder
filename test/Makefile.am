@@ -1,7 +1,7 @@
 AM_CFLAGS = $(CHECK_CFLAGS) \
             -DFIXTURE_DIR=\"$(srcdir)/fixtures/\" \
             -I$(top_srcdir)/src
-AM_LDFLAGS = $(CHECK_LIBS)
+LDADD = $(CHECK_LIBS)
 
 check_PROGRAMS = check_config.t check_rtp.t
 TESTS = $(check_PROGRAMS)
